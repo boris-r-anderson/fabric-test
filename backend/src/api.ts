@@ -25,27 +25,39 @@ const fetchData = async (url: string): Promise<RecordList> => {
 
 // Fetches first set of API results and saves entries to the database
 api.get('/api/button-1', async (request: Request, response: Response) => {
-  const results = await fetchData(API_ENDPOINT_1)
+  try {
+    const results = await fetchData(API_ENDPOINT_1)
 
-  await addRecords(results.Search)
+    await addRecords(results.Search)
 
-  response.json({ results: results.Search })
+    response.json({ results: results.Search })
+  } catch (error) {
+    response.status(500).json({ error: error.message })
+  }
 })
 
 api.get('/api/button-2', async (request: Request, response: Response) => {
-  const results = await fetchData(API_ENDPOINT_2)
+  try {
+    const results = await fetchData(API_ENDPOINT_2)
 
-  await addRecords(results.Search)
+    await addRecords(results.Search)
 
-  response.json({ results: results.Search })
+    response.json({ results: results.Search })
+  } catch (error) {
+    response.status(500).json({ error: error.message })
+  }
 })
 
 api.get('/api/button-3', async (request: Request, response: Response) => {
-  const results = await fetchData(API_ENDPOINT_3)
+  try {
+    const results = await fetchData(API_ENDPOINT_3)
 
-  await addRecords(results.Search)
+    await addRecords(results.Search)
 
-  response.json({ results: results.Search })
+    response.json({ results: results.Search })
+  } catch (error) {
+    response.status(500).json({ error: error.message })
+  }
 })
 
 export default api
