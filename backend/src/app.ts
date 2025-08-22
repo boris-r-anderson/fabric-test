@@ -2,6 +2,7 @@
 import express, { Request, Response } from 'express'
 import { API_ENDPOINT_1, API_ENDPOINT_2, API_ENDPOINT_3 } from './variables'
 import { RecordList } from './types'
+import { addRecords } from './db'
 
 // Start Express server
 const app = express()
@@ -26,8 +27,11 @@ const fetchData = async (url: string): Promise<RecordList> => {
 
 // Fetches first set of API results and saves entries to the database
 app.get('/api/button-1', async (request: Request, response: Response) => {
-  const results = await fetchData(API_ENDPOINT_1)
-  response.json({ result: results.Search })
+  const apiResponse = await fetchData(API_ENDPOINT_1)
+
+  await addRecords(apiResponse.Search)
+
+  response.json({ result: 'ok' })
 })
 
 app.get('/api/button-2', async (request: Request, response: Response) => {
