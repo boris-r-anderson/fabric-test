@@ -40,25 +40,83 @@ export const initDatabase = () => {
   db.close()
 }
 
-const queryDb = async (db: sqlite3.Database, sql: string, params: any) =>
+const dbGet = async (db: sqlite3.Database, sql: string, params: Array<any>) =>
   new Promise((resolve, reject) => {
-    db.get(sql, params, (error, rows) => {
+    db.get(sql, params, function (error, rows) {
       if (error) reject(error)
       else resolve(rows)
     })
   })
 
+const dbRun = async (
+  db: sqlite3.Database,
+  sql: string,
+  params: Array<any>,
+  callback: Function | undefined = undefined
+) =>
+  new Promise((resolve, reject) => {
+    db.run(sql, params, function (error) {
+      if (error) reject(error)
+      else if (callback != undefined) callback(this.lastID)
+      resolve('')
+    })
+  })
+
+const checkAndInsertPoster = async (
+  db: sqlite3.Database,
+  record_id: number,
+  poster_url: string
+) => {
+  try {
+    const poster = await dbGet(
+      db,
+      'SELECT poster_id FROM posters where url = ?',
+      [poster_url]
+    )
+
+    if (!poster) {
+      await dbRun(
+        db,
+        'INSERT INTO posters(record_id, url) VALUES(?, ?)',
+        [record_id, poster_url],
+        async (newPosterId: number) =>
+          console.log(
+            `Added poster for record ${record_id} with ID ${newPosterId}`
+          )
+      )
+    }
+  } catch (error) {
+    console.error(`Unable to add poster record`)
+    throw error
+  }
+}
+
 export const addRecords = async (results: Array<RecordResult>) => {
   const db = connectDb()
 
+  // Could be optimised with a transaction, but this is fine for low volumes of data
   results.forEach(async (record) => {
-    const queryRecord = await queryDb(
+    // Check if the record already exists
+    const queryRecord = await dbGet(
       db,
       'SELECT record_id FROM records WHERE title = ?',
       [record.Title]
     )
-    console.log(queryRecord, record)
+
+    // If not, add new record with poster entry (via callback)
+    if (!queryRecord) {
+      await dbRun(
+        db,
+        'INSERT INTO records(title, year, imdbId, type) VALUES(?, ?, ?, ?)',
+        [record.Title, record.Year, record.imdbID, record.Type],
+        async (newRecordId: number) => {
+          console.log(`Added record ${record.Title} with ID ${newRecordId}`)
+          await checkAndInsertPoster(db, newRecordId, record.Poster)
+        }
+      )
+    }
   })
 
+  // Done
   db.close()
 }

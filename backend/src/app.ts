@@ -30,19 +30,27 @@ const fetchData = async (url: string): Promise<RecordList> => {
 
 // Fetches first set of API results and saves entries to the database
 app.get('/api/button-1', async (request: Request, response: Response) => {
-  const apiResponse = await fetchData(API_ENDPOINT_1)
+  const results = await fetchData(API_ENDPOINT_1)
 
-  await addRecords(apiResponse.Search)
+  await addRecords(results.Search)
 
-  response.json({ result: 'ok' })
+  response.json({ results: results.Search })
 })
 
 app.get('/api/button-2', async (request: Request, response: Response) => {
   const results = await fetchData(API_ENDPOINT_2)
+
+  await addRecords(results.Search)
+
+  response.json({ results: results.Search })
 })
 
 app.get('/api/button-3', async (request: Request, response: Response) => {
   const results = await fetchData(API_ENDPOINT_3)
+
+  await addRecords(results.Search)
+
+  response.json({ results: results.Search })
 })
 
 app.listen(PORT, () => {
