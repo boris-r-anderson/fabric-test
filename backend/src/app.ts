@@ -3,12 +3,15 @@ import express, { Request, Response } from 'express'
 import { API_ENDPOINT_1, API_ENDPOINT_2, API_ENDPOINT_3 } from './variables'
 import { RecordList } from './types'
 import { addRecords } from './db'
+import { initDatabase } from './db'
 
-// Start Express server
+// Start Express server, init DB
 const app = express()
 app.use(express.json())
 const PORT = 3000
+initDatabase()
 
+// Generic function for fetching data from endpoints
 const fetchData = async (url: string): Promise<RecordList> => {
   try {
     const apiResponse = await fetch(url)
