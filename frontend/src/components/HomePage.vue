@@ -1,5 +1,8 @@
 <template>
-  <v-container class="fill-height">
+  <v-app-bar>
+    <v-app-bar-title> Boris Anderson - Fabric Test </v-app-bar-title>
+  </v-app-bar>
+  <v-container>
     <v-row>
       <v-col>
         <v-btn width="300px" title="Button 1" @click="buttonPress(1)"
@@ -18,7 +21,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-data-table :items="data" :headers="headers">
+      <v-data-table :items="data" :headers="headers" :loading="loading">
         <template v-slot:item.Poster="{ value }">
           <v-img v-if="value != 'N/A'" :src="value" />
         </template>
@@ -62,18 +65,21 @@ const headers = [
   {
     title: 'Poster',
     key: 'Poster',
+    sortable: false,
   },
 ]
 
 // Misc variables
 const errorMsg = ''
 const showError = computed(() => errorMsg.length > 0)
+let loading = false
 
 // Table data
 let data: Array<RecordResult> = reactive([])
 
 const buttonPress = async (button: number) => {
   try {
+    loading = true
     const apiResponse: Response = await fetch(
       `http://localhost:8000/api/button-${button}`
     )
@@ -87,8 +93,10 @@ const buttonPress = async (button: number) => {
 
     data.length = 0
     data.push(...resBody.results)
-    console.log(resBody.results)
+    // console.log(resBody.results)
+    loading = false
   } catch (error) {
+    loading = false
     console.error(`Failed to fetch data for button ${button}`)
   }
 }
