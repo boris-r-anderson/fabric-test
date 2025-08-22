@@ -4,11 +4,17 @@ import { API_ENDPOINT_1, API_ENDPOINT_2, API_ENDPOINT_3 } from './variables'
 import { RecordList } from './types'
 import { addRecords } from './db'
 import { initDatabase } from './db'
+import cors from 'cors'
+
+const corsConfig: cors.CorsOptions = {
+  origin: ['http://localhost:3000'],
+}
 
 // Start Express server, init DB
 const app = express()
+app.use(cors(corsConfig))
 app.use(express.json())
-const PORT = 3000
+const PORT = 8000
 initDatabase()
 
 // Generic function for fetching data from endpoints
