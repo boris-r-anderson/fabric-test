@@ -1,10 +1,10 @@
 // const { Sequelize, DataTypes } = require('sequelize');
 const fs = require('fs')
-const db_path = './src/database.db'
 import sqlite3 from 'sqlite3'
-import { RecordList, RecordResult } from './types.js'
+import { RecordResult } from './types.js'
+import { DB_PATH } from './variables'
 
-export const connectDb = () => {
+export const connectDb = (db_path: string = DB_PATH) => {
   if (fs.existsSync(db_path)) {
     return new sqlite3.Database(db_path)
   } else {
@@ -18,24 +18,28 @@ export const connectDb = () => {
 }
 
 // Function to create tables - only called at startup and only if tables don't already exist
-export const initDatabase = () => {
-  const db = connectDb()
+export const initDatabase = (db_path: string = DB_PATH) => {
+  const db = connectDb(db_path)
   db.exec(`PRAGMA foreign_keys = ON;`) // enables foreign key constraints
-  db.exec(`
+  db.exec(
+    `
   CREATE TABLE IF NOT EXISTS records (
     record_id INTEGER       PRIMARY KEY,
     title     VARCHAR(100)  NOT NULL,
     year      INTEGER       NOT NULL,
     imdbId    VARCHAR(50)   NOT NULL,
     type      VARCHAR(50)   NOT NULL
-  );`)
-  db.exec(`
-  CREATE TABLE IF NOT EXISTS posters (
-    poster_id INTEGER       PRIMARY KEY,
-    record_id INTEGER       NOT NULL,
-    url       VARCHAR(200)  NOT NULL,
-    FOREIGN KEY (record_id) REFERENCES records (record_id)
-  );`)
+  );`,
+    () => {
+      db.exec(`
+    CREATE TABLE IF NOT EXISTS posters (
+      poster_id INTEGER       PRIMARY KEY,
+      record_id INTEGER       NOT NULL,
+      url       VARCHAR(200)  NOT NULL,
+      FOREIGN KEY (record_id) REFERENCES records (record_id) ON DELETE CASCADE
+    );`)
+    }
+  )
   console.log('DB initialised')
   db.close()
 }
