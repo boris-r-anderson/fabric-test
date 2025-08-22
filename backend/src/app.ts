@@ -1,13 +1,14 @@
 // app.ts
 import express, { Request, Response } from 'express'
 import { API_ENDPOINT_1, API_ENDPOINT_2, API_ENDPOINT_3 } from './variables'
+import { RecordList } from './types'
 
 // Start Express server
 const app = express()
 app.use(express.json())
 const PORT = 3000
 
-const fetchData = async (url: string) => {
+const fetchData = async (url: string): Promise<RecordList> => {
   try {
     const apiResponse = await fetch(url)
     if (!apiResponse.ok)
@@ -26,7 +27,7 @@ const fetchData = async (url: string) => {
 // Fetches first set of API results and saves entries to the database
 app.get('/api/button-1', async (request: Request, response: Response) => {
   const results = await fetchData(API_ENDPOINT_1)
-  response.json({ result: results })
+  response.json({ result: results.Search })
 })
 
 app.get('/api/button-2', async (request: Request, response: Response) => {
