@@ -62,11 +62,13 @@ const dbRun = async (
     })
   })
 
+// Insert movie/game posters via a callback function
 const checkAndInsertPoster = async (
   db: sqlite3.Database,
   record_id: number,
   poster_url: string
 ) => {
+  if (poster_url === 'N/A') return
   try {
     const poster = await dbGet(
       db,
