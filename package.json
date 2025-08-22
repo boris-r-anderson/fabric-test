@@ -3,7 +3,11 @@
   "scripts": {
     "client": "cd frontend && npm run preview",
     "server": "cd backend && npm run start",
-    "start": "concurrently \"npm run client\" \"npm run server\" "
+    "launch": "concurrently \"npm run client\" \"npm run server\" ",
+    "client-init": "cd frontend && npm install",
+    "server-init": "cd backend && npm install",
+    "init": "concurrently \"npm run client-init\" \"npm run server-init\" ",
+    "start": "npm run init && npm run launch"
   },
   "devDependencies": {
     "concurrently": "^9.2.0"
