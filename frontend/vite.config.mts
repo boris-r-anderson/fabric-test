@@ -72,17 +72,12 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('src', import.meta.url)),
     },
-    extensions: [
-      '.js',
-      '.json',
-      '.jsx',
-      '.mjs',
-      '.ts',
-      '.tsx',
-      '.vue',
-    ],
+    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
   },
   server: {
+    port: 3000,
+  },
+  preview: {
     port: 3000,
   },
   css: {
